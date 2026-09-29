@@ -1,9 +1,12 @@
 
+
 // ==========================================
 // DATOS DE LOS PRODUCTOS
 // ==========================================
 
+
 const productsData = {
+
 
     arroz: {
         title: "Arroz Paquete 1kg",
@@ -15,6 +18,7 @@ const productsData = {
         storage: "Conservar en un lugar fresco, seco y al resguardo de la luz solar directa."
     },
 
+
     fideos: {
         title: "Fideos Tallarines 500g",
         price: "$1.200",
@@ -24,6 +28,7 @@ const productsData = {
         content: "500g",
         storage: "Mantener en su paquete original en ambiente seco."
     },
+
 
     aceite: {
         title: "Aceite de Girasol 1.5L",
@@ -35,6 +40,7 @@ const productsData = {
         storage: "Mantener el envase cerrado en un lugar fresco."
     },
 
+
     azucar: {
         title: "Azúcar Paquete 1kg",
         price: "$2.000",
@@ -44,6 +50,7 @@ const productsData = {
         content: "1000g (1 kg)",
         storage: "Conservar en un lugar fresco, seco y alejado de la humedad."
     },
+
 
     almendra: {
         title: "Almendras Paquete 500g",
@@ -57,21 +64,29 @@ const productsData = {
 };
 
 
+
+
 // ==========================================
 // BUSCADOR DE PRODUCTOS
 // ==========================================
 
+
 function filterProducts() {
 
+
     const searchInput = document.getElementById("searchInput");
+
 
     const textoBuscado = searchInput.value
         .toLowerCase()
         .trim();
 
+
     const productos = document.querySelectorAll(".product-card");
 
+
     productos.forEach(function(producto) {
+
 
         const nombre = producto
             .querySelector("h2")
@@ -79,18 +94,26 @@ function filterProducts() {
             .toLowerCase()
             .trim();
 
+
         if (nombre.includes(textoBuscado)) {
+
 
             producto.style.display = "";
 
+
         } else {
+
 
             producto.style.display = "none";
 
+
         }
+
 
     });
 }
+
+
 
 
 // ==========================================
@@ -100,203 +123,294 @@ function filterProducts() {
 
 
 
+
+
+
+
 // Comprobar compatibilidad del navegador
 
+
 if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+
 
     const SpeechRecognition =
         window.SpeechRecognition || window.webkitSpeechRecognition;
 
+
     recognition = new SpeechRecognition();
+
 
     recognition.lang = "es-AR";
 
+
     recognition.continuous = false;
+
 
     recognition.interimResults = false;
 
 
+
+
     // Cuando empieza a escuchar
 
+
     recognition.onstart = function() {
+
 
         const button = document.getElementById("voiceButton");
         const status = document.getElementById("voiceStatus");
 
+
         button.classList.add("listening");
+
 
         status.textContent = "Escuchando... Decí el nombre del producto.";
 
+
     };
+
+
 
 
     // Cuando recibe lo que dijo la persona
 
+
     recognition.onresult = function(event) {
+
 
         const resultado = event.results[0][0].transcript;
 
+
         const searchInput = document.getElementById("searchInput");
+
 
         // Colocar el texto reconocido en el buscador
 
+
         searchInput.value = resultado;
+
 
         // Ejecutar la búsqueda
 
+
         filterProducts();
+
 
         const status = document.getElementById("voiceStatus");
 
+
         status.textContent = "Buscando: " + resultado;
 
+
     };
+
+
 
 
     // Cuando termina de escuchar
 
+
     recognition.onend = function() {
+
 
         const button = document.getElementById("voiceButton");
 
+
         button.classList.remove("listening");
 
+
     };
+
+
 
 
     // Si ocurre un error
 
+
     recognition.onerror = function(event) {
+
 
         const button = document.getElementById("voiceButton");
         const status = document.getElementById("voiceStatus");
 
+
         button.classList.remove("listening");
 
+
         if (event.error === "not-allowed") {
+
 
             status.textContent =
                 "El navegador no tiene permiso para utilizar el micrófono.";
 
+
         } else if (event.error === "no-speech") {
+
 
             status.textContent =
                 "No se detectó ninguna voz. Intentá nuevamente.";
 
+
         } else {
+
 
             status.textContent =
                 "No se pudo utilizar el reconocimiento de voz.";
 
+
         }
+
 
     };
 
+
 }
+
+
 
 
 // ==========================================
 // ACTIVAR BÚSQUEDA POR VOZ
 // ==========================================
 
+
 function startVoiceSearch() {
+
 
     const status = document.getElementById("voiceStatus");
 
+
     if (!recognition) {
+
 
         status.textContent =
             "Tu navegador no admite reconocimiento de voz.";
 
+
         return;
     }
 
+
     try {
+
 
         recognition.start();
 
+
     } catch (error) {
+
 
         console.log("El reconocimiento ya está activo.");
 
+
     }
 }
+
 
 // ==========================================
 // BUSQUEDA POR VOZ
 // ==========================================
 
+
 let recognition = null;
 let isListening = false;
 
+
 if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+
 
     const SpeechRecognition =
         window.SpeechRecognition || window.webkitSpeechRecognition;
 
+
     recognition = new SpeechRecognition();
+
 
     recognition.lang = "es-AR";
     recognition.continuous = false;
     recognition.interimResults = false;
 
+
     recognition.onstart = function () {
+
 
         isListening = true;
 
+
         document.getElementById("voiceButton")
             .classList.add("listening");
+
 
         document.getElementById("voiceStatus").textContent =
             "Escuchando... Decí el nombre del producto.";
     };
 
+
     recognition.onresult = function (event) {
+
 
         const texto = event.results[0][0].transcript.trim();
 
+
         const buscador = document.getElementById("searchInput");
+
 
         buscador.value = texto;
 
+
         // Ejecutar la búsqueda
         filterProducts();
+
 
         document.getElementById("voiceStatus").textContent =
             "Buscando: " + texto;
     };
 
+
     recognition.onend = function () {
 
+
         isListening = false;
+
 
         document.getElementById("voiceButton")
             .classList.remove("listening");
     };
 
+
     recognition.onerror = function (event) {
 
+
         isListening = false;
+
 
         document.getElementById("voiceButton")
             .classList.remove("listening");
 
+
         if (event.error === "not-allowed") {
+
 
             document.getElementById("voiceStatus").textContent =
                 "Se necesita permiso para utilizar el micrófono.";
 
+
         } else if (event.error === "no-speech") {
+
 
             document.getElementById("voiceStatus").textContent =
                 "No se detectó ninguna voz. Intentá nuevamente.";
 
+
         } else if (event.error === "aborted") {
+
 
             document.getElementById("voiceStatus").textContent =
                 "";
 
+
         } else {
+
 
             document.getElementById("voiceStatus").textContent =
                 "No se pudo utilizar el micrófono.";
@@ -305,35 +419,50 @@ if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
 }
 
 
+
+
 // ==========================================
 // INICIAR BUSQUEDA POR VOZ
 // ==========================================
 
+
 function startVoiceSearch() {
 
+
     if (!recognition) {
+
 
         document.getElementById("voiceStatus").textContent =
             "Tu navegador no admite búsqueda por voz.";
 
+
         return;
     }
+
 
     // Evita iniciar el micrófono mientras ya está escuchando
     if (isListening) {
         return;
     }
 
+
     try {
+
 
         recognition.start();
 
+
     } catch (error) {
+
 
         console.log("Error al iniciar la búsqueda por voz:", error);
 
+
     }
 }
+
+
+
 
 
 
@@ -341,54 +470,77 @@ function startVoiceSearch() {
 // ABRIR MODAL
 // ==========================================
 
+
 function openModal(productId) {
 
+
     const data = productsData[productId];
+
 
     if (!data) {
         return;
     }
 
+
     document.getElementById("modalTitle").textContent = data.title;
+
 
     document.getElementById("modalPrice").textContent = data.price;
 
+
     document.getElementById("modalImage").src = data.image;
+
 
     document.getElementById("modalDescription").textContent = data.description;
 
+
     document.getElementById("modalIngredients").textContent = data.ingredients;
+
 
     document.getElementById("modalContent").textContent = data.content;
 
+
     document.getElementById("modalStorage").textContent = data.storage;
+
 
     document.getElementById("productModal").style.display = "flex";
 }
+
+
 
 
 // ==========================================
 // CERRAR MODAL
 // ==========================================
 
+
 function closeModal() {
 
+
     document.getElementById("productModal").style.display = "none";
+
 
 }
 
 
+
+
 // Cerrar modal haciendo clic afuera
+
 
 window.onclick = function(event) {
 
+
     const modal = document.getElementById("productModal");
+
 
     if (event.target === modal) {
 
+
         closeModal();
+
 
     }
 
-};
 
+};
